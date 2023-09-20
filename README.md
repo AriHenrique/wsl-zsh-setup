@@ -270,7 +270,7 @@ groups
 ````
 <img src="assets\groups.png"/>
 
-- Verifique se o grupo ``docker`` está listado. Se não estiver, você pode adicioná-lo novamente com:
+- Verifique se o grupo ``docker`` está listado. Se <span style="color: red;">não estiver</span>, você pode adicioná-lo novamente com:
 
 ````bash
 sudo usermod -aG docker $USER
