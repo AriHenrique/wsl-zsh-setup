@@ -1,14 +1,19 @@
-# instalação WSL, Oh my ZSH + PowerLevel10k
+# Ambiente de Desenvolvimento Linux no macOS/Windows: WSL, Lima, Oh my ZSH + PowerLevel10k
 
-Guia e tutorial para a utilização do Linux dentro do ambiente Windows com plugins e funcionalidades visando a melhor experiência para desenvolvimento.
-![banner-stack-linux](/assets/wslstack-whitestroke.png)
-
+Guia e tutorial para a utilização do Linux dentro do ambiente Windows/macOS com plugins e funcionalidades visando a melhor experiência para desenvolvimento.
+![banner-stack-linux](/assets/banner.png)
 ## Sumário
 
 - [Recomendações Iniciais](#recomendações-iniciais)
-- [O que é WSL?](#o-que-é-wsl)
-- [Por que usar WSL 2 para desenvolvimento?](#por-que-usar-wsl-2-para-desenvolvimento)
-- [Instalação do WSL 2](#instalação-do-wsl-2)
+- [Escolha seu sistema](#escolha-seu-sistema)
+  - [Usuários Windows](#usuários-windows)
+    - [O que é WSL?](#o-que-é-wsl)
+    - [Por que usar WSL 2 para desenvolvimento?](#por-que-usar-wsl-2-para-desenvolvimento)
+    - [Instalação do WSL 2](#instalação-do-wsl-2)
+  - [Usuários macOS](#usuários-macos)
+    - [O que é Lima?](#o-que-é-lima)
+    - [Instalação do Lima](#instalação-do-lima)
+    - [Configuração do Lima](#configuração-do-lima)
 - [O que é Z Shell?](#o-que-é-z-shell)
 - [Instalando ZSH](#instalando-zsh)
 - [O que é Oh My Zsh?](#o-que-é-oh-my-zsh)
@@ -23,9 +28,15 @@ Guia e tutorial para a utilização do Linux dentro do ambiente Windows com plug
 ## Recomendações Iniciais
 
 - [Instale uma fonte adequada](#fonte-ideal)
-- [Cheque se sua máquina tem os requísitos minimos](#requisitos-mínimos)
+- [Cheque se sua máquina tem os requisitos mínimos](#requisitos-mínimos)
 
-## O que é WSL?
+## Escolha seu sistema
+
+Este guia contém instruções para configurar um ambiente de desenvolvimento Linux tanto para Windows (usando WSL2) quanto para macOS (usando Lima). Escolha a seção correspondente ao seu sistema operacional.
+
+## Usuários Windows
+
+### O que é WSL?
 
 WSL significa "Windows Subsystem for Linux" é uma camada de compatibilidade dentro do sistema operacional Windows que permite a execução de aplicativos Linux diretamente no Windows, sem a necessidade de uma máquina virtual separada. Isso permite que os usuários executem aplicativos e ferramentas Linux em seus sistemas Windows sem ter que instalar um sistema operacional Linux separado.
 
@@ -38,7 +49,7 @@ No ano de 2019, a Microsoft divulgou uma nova edição do WSL, conhecida como WS
 
 Para entender as diferenças entre as versões, consulte o seguinte link: https://docs.microsoft.com/pt-br/windows/wsl/compare-versions
 
-## Por que usar WSL 2 para desenvolvimento?
+### Por que usar WSL 2 para desenvolvimento?
 
 Existem várias razões pelas quais o WSL pode ser uma excelente escolha para desenvolvimento de software:
 
@@ -50,7 +61,7 @@ Existem várias razões pelas quais o WSL pode ser uma excelente escolha para de
 
 Em resumo, o WSL pode ser uma excelente escolha para desenvolvimento de software, permitindo que os desenvolvedores acessem ferramentas, suportem e configurem ambientes de desenvolvimento populares do Linux, e garantam a compatibilidade com o Windows.
 
-## Instalação do WSL 2
+### Instalação do WSL 2
 
 > ## Windows 11
 >
@@ -89,7 +100,7 @@ wsl --set-default-version 2
 
 Faça o download do Kernel 2 do WSL 2 nesse link: [https://docs.microsoft.com/pt-br/windows/wsl/wsl2-kernel](https://docs.microsoft.com/pt-br/windows/wsl/wsl2-kernel) e instale o pacote.
 
-## Escolha sua distro pela Microsoft Store
+### Escolha sua distro pela Microsoft Store
 
 Na Microsoft Store há diversas opções distribuições Linux para você baixar e utilizar.
 <br><br>
@@ -100,7 +111,129 @@ Ao iniciar o Linux instalado, você deverá criar um nome de usuário, que pode 
 <hr>
 Se tudo deu certo até aqui, parabéns, seu WSL2 já está funcionando! 🥳<br><br>
 
-## O que é Z shell?
+## Usuários macOS
+
+### O que é Lima?
+
+Lima é uma ferramenta que cria máquinas virtuais Linux no macOS com integração automática para sistemas de arquivos e portas. É uma alternativa para macOS que oferece uma experiência similar ao WSL2 do Windows, permitindo executar contêineres Docker e outros aplicativos Linux sem precisar instalar diretamente o Docker Desktop.
+
+### Instalação do Lima
+
+Para instalar o Lima no macOS, você precisa ter o Homebrew instalado. Se ainda não tiver, instale com:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Depois, instale o Lima com:
+
+```bash
+brew install lima
+```
+
+### Configuração do Lima
+
+Após instalar o Lima, vamos configurá-lo para funcionar com uma instância Ubuntu:
+
+1. Inicie o Lima pela primeira vez para criar o diretório de configuração:
+
+```bash
+limactl start --name=default
+```
+
+2. Interrompa a execução quando começar a baixar a imagem:
+
+```bash
+limactl stop default
+```
+
+3. Edite o arquivo de configuração para habilitar o modo writable:
+
+```bash
+nano ~/.lima/default/lima.yaml
+```
+
+4. Encontre a seção de mounts e modifique para incluir `writable: true`:
+
+```yaml
+mounts:
+  - location: "~"
+    writable: true
+```
+
+5. Salve o arquivo (CTRL+O, Enter, CTRL+X) e inicie o Lima novamente:
+
+```bash
+limactl start default
+```
+
+6. Configure seu arquivo `.zshrc` no macOS para facilitar a escolha entre macOS e Lima:
+
+```bash
+nano ~/.zshrc
+```
+
+7. Adicione (ou substitua seu arquivo existente) o conteúdo abaixo:
+
+```bash
+# Enable Powerlevel10k instant prompt. Deve ficar no topo!
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Caminho do Oh My Zsh
+export ZSH="$HOME/.oh-my-zsh"
+
+# Plugins que você quer usar
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+
+# Tema Powerlevel10k
+ZSH_THEME="powerlevel10k/powerlevel10k"
+
+# Carrega o Oh My Zsh (necessário para plugins funcionarem!)
+source $ZSH/oh-my-zsh.sh
+
+# Configuração visual do prompt (se existir)
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+
+if [[ $- == *i* ]]; then
+  GREEN='\033[0;32m'
+  BLUE='\033[1;34m'
+  YELLOW='\033[1;33m'
+  RED='\033[0;31m'
+  NC='\033[0m' # No Color
+  
+  echo ""
+  echo -e "${BLUE}==============================="
+  echo -e "${YELLOW} Qual ambiente deseja iniciar? "
+  echo -e "${BLUE}===============================${NC}"
+  echo -e "${GREEN}[1]${NC} macOS (shell padrão)"
+  echo -e "${GREEN}[2]${NC} Ubuntu (Lima VM)"
+  echo -e "${BLUE}===============================${NC}"
+  echo -ne "${YELLOW}Escolha [1-2]: ${NC}"
+  read env_choice
+  
+  case "$env_choice" in
+    1)
+      echo -e "${GREEN}👉 Você está no shell do macOS.${NC}" ;;
+    2)
+      echo -e "${GREEN}👉 Iniciando shell Ubuntu via Lima...${NC}"
+      exec lima ;;
+    *)
+      echo -e "${RED}❌ Opção inválida. Continuando no macOS...${NC}" ;;
+  esac
+fi
+```
+
+8. Salve o arquivo e recarregue-o:
+
+```bash
+source ~/.zshrc
+```
+
+Agora, toda vez que você abrir um novo terminal, terá a opção de escolher entre o shell do macOS ou o Ubuntu via Lima.
+
+## O que é Z Shell?
 
 Z Shell, também conhecido como zsh, é um interpretador de comandos de shell para sistemas Unix-like, como Linux e macOS. Ele é uma alternativa mais poderosa e avançada ao shell padrão Bash.
 
@@ -118,6 +251,8 @@ O Z Shell pode ser instalado em muitas distribuições Linux e macOS por meio de
 
 ## Instalando ZSH
 
+### No WSL (Windows)
+
 Para instalar o Z Shell abra o app Terminal do Windows para acessar o seu WSL <br><br>
 ![windows-terminal-search](./assets/terminal.gif)
 
@@ -131,6 +266,16 @@ sudo apt update && sudo apt upgrade
 Para instalar o zshell utilize:
 
 ```bash
+sudo apt install zsh -y
+```
+
+### No Lima (macOS)
+
+O ZSH já vem instalado por padrão no macOS. Para instalar no ambiente Lima:
+
+```bash
+lima
+sudo apt update && sudo apt upgrade
 sudo apt install zsh -y
 ```
 
@@ -148,11 +293,11 @@ Vamos utilizar o Oh My Zsh para instalar o PowerLevel10k, um plugin que vai deix
 
 > ### Pré-requisitos:
 
-- Ter Git instalado (Por padrão o **WSL - Ubuntu** já vem com o Git instalado, mas caso queira se certificar digite `git --version` no seu terminal).
+- Ter Git instalado (Por padrão o **WSL/Lima - Ubuntu** já vem com o Git instalado, mas caso queira se certificar digite `git --version` no seu terminal).
 
 - Ter `curl` ou `wget` instalados (Neste guia iremos utilizar curl).
 
-⚠️ **_Caso o Git não esteja instalado no seu WSL, utilize:_**
+⚠️ **_Caso o Git não esteja instalado no seu ambiente, utilize:_**
 
 ```bash
 sudo apt update && sudo apt upgrade
@@ -173,7 +318,7 @@ Para checar se foi devidamente instalado execute o comando: `curl --version`
 
 ## Instalando OhMyZsh
 
-Para instalar Oh My Zsh basta digitar este comando no terminal e reinciar a janela do WSL.
+Para instalar Oh My Zsh basta digitar este comando no terminal e reinciar a janela do seu ambiente Linux.
 
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" -y
@@ -221,7 +366,7 @@ p10k configure
 
 ## ZSH Plugins
 
-Agora que seu combo setup está pronto, WSL2 + zsh + powerlevel10k, podemos colocar a valer as ferramentas a nossa disposição. Aqui vou somente mostrar como instalar dois plugins que são em minha opnião indispensáveis, mas vale ressaltar que as opções de customização são praticamente ilimitadas e que você pode adicionar quantos plugins desejar.
+Agora que seu combo setup está pronto, WSL2/Lima + zsh + powerlevel10k, podemos colocar a valer as ferramentas a nossa disposição. Aqui vou somente mostrar como instalar dois plugins que são em minha opnião indispensáveis, mas vale ressaltar que as opções de customização são praticamente ilimitadas e que você pode adicionar quantos plugins desejar.
 <br><br>
 
 > ### zsh-syntax-highlighting & zsh-autosuggestions
@@ -260,6 +405,8 @@ Já que você está dentro de um ambiente Linux, recomendamos que você instale 
 10. **zoxide**
 
 ## Docker wsl
+
+### Docker no WSL (Windows)
 
 ### Verifique o grupo Docker:
 
@@ -309,6 +456,15 @@ sudo chown $USER:docker /var/run/docker.sock
 
 - Às vezes, pode ser necessário reiniciar o WSL para que as alterações nas permissões tenham efeito.
 
+### Docker no Lima (macOS)
+
+O Lima já vem com Docker pré-configurado. Ao acessar o ambiente Lima (executando `lima`), você já pode usar os comandos Docker normalmente:
+
+```bash
+lima
+docker run hello-world
+```
+
 - Após realizar essas etapas, tente o comando docker.
 
 ````dockerfile
@@ -318,17 +474,19 @@ docker run docker/whalesay cowsay hello_world
 
 ## Visual Studio Code
 
-Uma das grandes vantagens de se utilizar o WSL2 é a interatividade com o VSCode, desta forma, é possível usar a IDE para manipular os arquivos e diretórios dentro do Linux, além de usar o terminal para gerenciar pacotes e ver status do git dos seus projetos em tempo real de desenvolvimento.
+Uma das grandes vantagens de se utilizar o WSL2/Lima é a interatividade com o VSCode, desta forma, é possível usar a IDE para manipular os arquivos e diretórios dentro do Linux, além de usar o terminal para gerenciar pacotes e ver status do git dos seus projetos em tempo real de desenvolvimento.
 
 ### Pré-requisitos
 
 - Já ter instalado o [VSCode](https://code.visualstudio.com/download) na sua máquina
-- Instalar a extensão WSL no Visual Studio Code
+- Instalar a extensão WSL no Visual Studio Code (para Windows)
+- Instalar a extensão Remote-SSH (para macOS)
 
 ![wsl-extension-pic](/assets/wsl.png)
 
 ## Utilização
 
+### No WSL (Windows)
 Após ter instalado o VSCode e a extensão WSL, dentro do terminal basta executar:
 
 ```bash
@@ -336,6 +494,22 @@ code nome-do-arquivo
 ```
 
 O Ubuntu irá abrir o diretório/arquivo no VSCode em ambiente Linux. Caso tudo corra de maneira correta, no canto inferior esquerdo você verá uma tag em azul com o nome similar à: `WSL: Ubuntu` e o seu terminal integrado no VSCode funcional em Linux.
+
+### No Lima (macOS)
+Após instalar o VSCode e a extensão Remote-SSH:
+
+1. Adicione um host para o Lima no VSCode:
+   - Abra a paleta de comandos (CMD+Shift+P)
+   - Digite "Remote-SSH: Add New SSH Host"
+   - Digite `lima` e pressione Enter
+   - Selecione o arquivo de configuração SSH
+
+2. Conecte-se ao host Lima:
+   - Abra a paleta de comandos (CMD+Shift+P)
+   - Digite "Remote-SSH: Connect to Host"
+   - Selecione "lima"
+
+3. Você pode agora abrir pastas e arquivos do ambiente Lima diretamente no VSCode.
 
 ![wsl-working](/assets/wsl-terminal.png)
 
@@ -349,11 +523,22 @@ A configuração dentro do terminal Windows é feita a partir dos perfis, desta 
 
 ![dropdown-terminal-menu](/assets/dropdown-menu-terminal.png)
 
+## Configurando fontes no Terminal macOS
+
+Para configurar fontes no Terminal do macOS:
+
+1. Abra o Terminal
+2. Vá para Preferências (Cmd + ,)
+3. Clique na aba "Perfis"
+4. Selecione seu perfil ativo
+5. Clique em "Texto"
+6. Altere a fonte para a Nerd Font que você instalou
+
 ## Configurando fonte no VSCode
 
-Se seu terminal e WSL estão funcionando mas você não está conseguindo visualizar os ícones dentro do terminal integrado do VSCode, basta somente uma simples configuração nas configurações de usuário para solucionar isso.
+Se seu terminal e WSL/Lima estão funcionando mas você não está conseguindo visualizar os ícones dentro do terminal integrado do VSCode, basta somente uma simples configuração nas configurações de usuário para solucionar isso.
 
-Dentro do VSCode, abra a palheta de comando, `ctrl + shift + p` , e procure por `Preferences: Open User Settings (JSON)` ou `Preferências: Abrir as Configurações do Usuário (JSON)` caso use o VSCode em português.
+Dentro do VSCode, abra a palheta de comando, `ctrl + shift + p` (Windows) ou `cmd + shift + p` (macOS), e procure por `Preferences: Open User Settings (JSON)` ou `Preferências: Abrir as Configurações do Usuário (JSON)` caso use o VSCode em português.
 
 Nas linhas do editor você verá uma estrutura de `JSON`, basta adicionar uma nova linha e digitar:
 
@@ -363,11 +548,15 @@ Nas linhas do editor você verá uma estrutura de `JSON`, basta adicionar uma no
 
 ⚠️ **Lembre-se de digitar o exato nome da fonte para que funcione corretamente**
 
-- Para checar as fontes instaladas no seu computador basta pesquisar na barra de pesquisa do Windows o termo `Fontes` ou abrir o Painel de Controle e selecionar o icone `Fontes`.
+- Para checar as fontes instaladas no seu computador:
+  - Windows: pesquisar na barra de pesquisa o termo `Fontes` ou abrir o Painel de Controle e selecionar o icone `Fontes`.
+  - macOS: abrir o aplicativo Font Book.
 
 ⚠️ **O Terminal do VSCode só possui suporte com fontes mono**
 
 ## Requisitos Mínimos
+
+### Para WSL2 (Windows)
 
 Para executar o WSL2 (Windows Subsystem for Linux 2) em um sistema operacional Windows 10, você precisa cumprir os seguintes requisitos mínimos de sistema:
 
@@ -379,10 +568,21 @@ Para executar o WSL2 (Windows Subsystem for Linux 2) em um sistema operacional W
 
 - 5 GB de espaço livre em disco - O WSL2 requer pelo menos 5 GB de espaço livre em disco para ser instalado.
 
+### Para Lima (macOS)
+
+Para executar o Lima no macOS, você precisa:
+
+- macOS 11 (Big Sur) ou superior
+- Processador Intel ou Apple Silicon (M1/M2)
+- Pelo menos 4 GB de RAM
+- 5 GB de espaço livre em disco
+- Homebrew instalado
+
 ## Referências
 
 - [Guia rápido do WSL2 + Docker](https://github.com/codeedu/wsl2-docker-quickstart)
 - [WSL - Wikipedia](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux#:~:text=WSL%202%20requires%20Windows%2011,of%20native%20Ubuntu%2020.04%20LTS.)
+- [Lima - GitHub](https://github.com/lima-vm/lima)
 - [Z shell](https://en.wikipedia.org/wiki/Z_shell)
 - [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh)
 - [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
